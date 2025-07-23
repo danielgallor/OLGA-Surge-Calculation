@@ -5,7 +5,12 @@
         "SL_Case_16_14inch_Flowline_8inch_Jumper"
     ],
     "Working Location": "C:\\Users\\Daniel.Gallo\\OneDrive - Xodus Group\\Documents\\myProject\\Surge Volume Calculation",
-    "Branches": "T5ILT_to_FPSO_Flowline"
+    "Model Inputs":{
+        "Branch": "T5ILT_to_FPSO_Flowline",
+        "Pipe": "",
+        "Section": "4",
+        "Position": "US_CHOKE_9"
+    }
 
 
 
