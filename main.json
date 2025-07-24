@@ -7,9 +7,13 @@
     "Working Location": "C:\\Users\\Daniel.Gallo\\OneDrive - Xodus Group\\Documents\\myProject\\Surge Volume Calculation",
     "Model Inputs":{
         "Branch": "T5ILT_to_FPSO_Flowline",
-        "Pipe": "",
+        "Pipe": "Pipe-99",
         "Section": "4",
-        "Position": "US_CHOKE_9"
+        "Position": ""
+    },
+    "Arrival Conditions":{
+        "Oil Drain Rate (m3/h)":5,
+        "Water Drain Rate (m3/h)": 10
     }
 
 
