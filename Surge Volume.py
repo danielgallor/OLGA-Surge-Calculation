@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 import pyfas as fa
 import json
+import matplotlib.pyplot as plt
 
 with open('main.json', 'r') as file:
     readjson = json.load(file)
@@ -71,9 +72,9 @@ def organise_data(tpl):
         else:
             trend_data.loc[i, "Water Cumm Surge (m3)"] = np.where(trend_data["Water Surge vol (m3)"][i+1] + trend_data["Water Cumm Surge (m3)"][i] < 0, 0, trend_data["Water Surge vol (m3)"][i+1] + trend_data["Water Cumm Surge (m3)"][i])
     
-    trend_data["Volumetric flow rate oil (m3/h)"] = QLTWT/3600
-    trend_data["oil Drain Rate (m3/h)"] = oil_drain
-    trend_data["Oil Drained Flow"] =  trend_data["Volumetric flow rate oil (m3/h)"] - trend_data["oil Drain Rate (m3/h)"]
+    trend_data["Volumetric flow rate oil (m3/h)"] = QLTHL/3600
+    trend_data["Oil Drain Rate (m3/h)"] = oil_drain
+    trend_data["Oil Drained Flow"] =  trend_data["Volumetric flow rate oil (m3/h)"] - trend_data["Oil Drain Rate (m3/h)"]
     trend_data["Oil Surge vol (m3)"] = trend_data["Delta Time (h)"] * trend_data["Oil Drained Flow"]
     for i in range(len(trend_data)-1):
         if i == 0:
@@ -81,22 +82,33 @@ def organise_data(tpl):
         else:
             trend_data.loc[i, "Oil Cumm Surge (m3)"] = np.where(trend_data["Oil Surge vol (m3)"][i+1] + trend_data["Oil Cumm Surge (m3)"][i] < 0, 0, trend_data["Oil Surge vol (m3)"][i+1] + trend_data["Oil Cumm Surge (m3)"][i])
     
-    return trend_data[["Time (h)", "Volumetric flow rate water (m3/h)", "Water Drain Rate (m3/h)"]]
+    return time, trend_data[["Time (h)", "Volumetric flow rate water (m3/h)", "Water Drain Rate (m3/h)","Water Cumm Surge (m3)","Volumetric flow rate oil (m3/h)", "Oil Drain Rate (m3/h)", "Oil Cumm Surge (m3)"]]
 
 
 
 case_surge_volume = {case: None for case in cases}
 for tpl, case in zip(tpls, cases):
-    trend_data = organise_data(tpl)
+    time, trend_data = organise_data(tpl)
     case_surge_volume[case] = trend_data
 
 with pd.ExcelWriter(f"{working_location}//Surge Volume.xlsx") as writer: 
-    for branch, df in  case_surge_volume.items():
+    for case, df in  case_surge_volume.items():
          if df is not None:
             df.to_excel(writer, sheet_name = case, index=False)
 
 
-        
+fig, axes = plt.subplots(nrows = 2, ncols = 1)
+x_time  = time
+y_water = trend_data["Water Cumm Surge (m3)"]
+y_oil = trend_data["Oil Cumm Surge (m3)"]  
+
+axes[0].plot(x_time, y_oil, 'r')
+axes[0].set(ylabel ="Oil Surge Volume (m3)", xlabel = None )
+axes[1].plot(x_time, y_water, 'r')
+axes[1].set(ylabel ="Water Surge Volume (m3)", xlabel = "Time (Hour)")
+fig.tight_layout()
+
+fig.savefig(f"{working_location}//Surge Volumes.png")
 
 
 
